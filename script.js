@@ -1,8 +1,33 @@
 "use strict";
 
 window.dataLayer = window.dataLayer || [];
+window.gtag = window.gtag || function gtag(){ window.dataLayer.push(arguments); };
+
+const GOOGLE_ANALYTICS_ID = "G-D991NBE3PQ";
 const campaignParams = new URLSearchParams(window.location.search);
 const businessEmail = "reginaldoguincho24h@gmail.com";
+
+function installGoogleAnalytics() {
+  const existingGtagScript = Array.from(document.scripts).find((script) =>
+    script.src && script.src.includes("googletagmanager.com/gtag/js")
+  );
+
+  if (!existingGtagScript) {
+    const analyticsScript = document.createElement("script");
+    analyticsScript.async = true;
+    analyticsScript.src = `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`;
+    analyticsScript.dataset.analyticsId = GOOGLE_ANALYTICS_ID;
+    document.head.appendChild(analyticsScript);
+    window.gtag("js", new Date());
+  }
+
+  if (!window.__reginaldoGa4Configured) {
+    window.gtag("config", GOOGLE_ANALYTICS_ID);
+    window.__reginaldoGa4Configured = true;
+  }
+}
+
+installGoogleAnalytics();
 
 function injectBusinessContact() {
   document.querySelectorAll(".footer-contact").forEach((footerContact) => {
@@ -61,15 +86,23 @@ function injectBusinessContact() {
 injectBusinessContact();
 
 function sendEvent(eventName, location) {
-  window.dataLayer.push({
-    event: eventName,
+  const eventData = {
     event_label: location || "unknown",
     page_path: window.location.pathname,
     utm_source: campaignParams.get("utm_source") || undefined,
     utm_medium: campaignParams.get("utm_medium") || undefined,
     utm_campaign: campaignParams.get("utm_campaign") || undefined,
     utm_content: campaignParams.get("utm_content") || undefined
+  };
+
+  window.dataLayer.push({
+    event: eventName,
+    ...eventData
   });
+
+  if (typeof window.gtag === "function") {
+    window.gtag("event", eventName, eventData);
+  }
 }
 
 document.querySelectorAll(".track-call").forEach((link) => {
