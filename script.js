@@ -2,6 +2,63 @@
 
 window.dataLayer = window.dataLayer || [];
 const campaignParams = new URLSearchParams(window.location.search);
+const businessEmail = "reginaldoguincho24h@gmail.com";
+
+function injectBusinessContact() {
+  document.querySelectorAll(".footer-contact").forEach((footerContact) => {
+    if (!footerContact.querySelector('a[href^="mailto:"]')) {
+      const emailLink = document.createElement("a");
+      emailLink.href = `mailto:${businessEmail}`;
+      emailLink.className = "track-email";
+      emailLink.dataset.location = "footer_email";
+      emailLink.innerHTML = `<i class="fa-solid fa-envelope" aria-hidden="true"></i> ${businessEmail}`;
+      footerContact.appendChild(emailLink);
+    }
+  });
+
+  const contactMethods = document.querySelector(".contact-methods");
+  if (contactMethods && !contactMethods.querySelector('a[href^="mailto:"]')) {
+    const emailCard = document.createElement("a");
+    emailCard.href = `mailto:${businessEmail}`;
+    emailCard.className = "contact-method track-email";
+    emailCard.dataset.location = "contact_card_email";
+    emailCard.innerHTML = `<span class="contact-method-icon"><i class="fa-solid fa-envelope"></i></span><div><small>E-MAIL</small><strong>${businessEmail}</strong><p>Toque para enviar um e-mail.</p></div><i class="fa-solid fa-chevron-right"></i>`;
+    contactMethods.appendChild(emailCard);
+  }
+
+  const bioContactMeta = document.querySelector(".bio-contact-meta");
+  if (bioContactMeta && !bioContactMeta.querySelector('a[href^="mailto:"]')) {
+    const emailRow = document.createElement("div");
+    emailRow.className = "bio-email-row";
+    emailRow.innerHTML = `<i class="fa-solid fa-envelope"></i> <a class="track-email" data-location="bio_email" href="mailto:${businessEmail}">${businessEmail}</a>`;
+    const socials = bioContactMeta.querySelector(".bio-socials");
+    if (socials) bioContactMeta.insertBefore(emailRow, socials);
+    else bioContactMeta.appendChild(emailRow);
+  }
+
+  if (window.location.pathname.startsWith("/bio") && !document.querySelector(".bio-back-button")) {
+    const backLink = document.createElement("a");
+    backLink.href = "/";
+    backLink.className = "bio-back-button";
+    backLink.setAttribute("aria-label", "Voltar para a página inicial");
+    backLink.innerHTML = `<i class="fa-solid fa-arrow-left"></i><span>Voltar ao site</span>`;
+    document.body.prepend(backLink);
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .bio-back-button{position:fixed;z-index:55;top:max(12px,env(safe-area-inset-top));left:12px;min-height:44px;display:inline-flex;align-items:center;gap:8px;padding:0 13px;border:1px solid rgba(255,255,255,.16);border-radius:999px;color:#fff;background:rgba(8,8,8,.86);box-shadow:0 10px 28px rgba(0,0,0,.34);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-size:.68rem;font-weight:900;letter-spacing:.02em;text-decoration:none;transition:transform .2s ease,background .2s ease}
+      .bio-back-button i{color:#ffc400}
+      .bio-back-button:hover{transform:translateY(-1px);background:#111}
+      .bio-email-row{margin-top:4px;overflow-wrap:anywhere}
+      .bio-email-row i{color:#ffc400;margin-right:4px}
+      .bio-email-row a{text-decoration:none;color:#d7d7d4;font-weight:700}
+      @media(max-width:420px){.bio-back-button{top:max(8px,env(safe-area-inset-top));left:8px;min-height:40px;padding:0 11px;font-size:.62rem}.bio-back-button span{display:none}.bio-back-button{width:40px;justify-content:center;padding:0}}
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+injectBusinessContact();
 
 function sendEvent(eventName, location) {
   window.dataLayer.push({
@@ -25,6 +82,10 @@ document.querySelectorAll(".track-whatsapp").forEach((link) => {
 
 document.querySelectorAll(".track-instagram").forEach((link) => {
   link.addEventListener("click", () => sendEvent("instagram_click", link.dataset.location));
+});
+
+document.querySelectorAll(".track-email").forEach((link) => {
+  link.addEventListener("click", () => sendEvent("email_click", link.dataset.location));
 });
 
 document.querySelectorAll(".track-cta").forEach((link) => {
@@ -104,5 +165,5 @@ if ("IntersectionObserver" in window) {
 
 window.dataLayer.push({
   event: "page_ready",
-  tracked_events: ["call_click", "whatsapp_click", "instagram_click", "cta_click"]
+  tracked_events: ["call_click", "whatsapp_click", "instagram_click", "email_click", "cta_click"]
 });
