@@ -1,6 +1,12 @@
 {
   "cleanUrls": true,
   "trailingSlash": true,
+  "rewrites": [
+    {
+      "source": "/og-reginaldo-guincho-24h-v2.jpg",
+      "destination": "/api/og-reginaldo-guincho-24h-v2"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -13,6 +19,13 @@
     {
       "source": "/assets/(.*)",
       "headers": [{"key":"Cache-Control","value":"public, max-age=31536000, immutable"}]
+    },
+    {
+      "source": "/og-reginaldo-guincho-24h-v2.jpg",
+      "headers": [
+        {"key":"Cache-Control","value":"public, max-age=31536000, immutable"},
+        {"key":"Content-Type","value":"image/jpeg"}
+      ]
     }
   ]
 }
