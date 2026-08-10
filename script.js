@@ -3,7 +3,7 @@
 window.dataLayer = window.dataLayer || [];
 window.gtag = window.gtag || function gtag(){ window.dataLayer.push(arguments); };
 
-const GOOGLE_ANALYTICS_ID = "G-D991NBE3PQ";
+const GOOGLE_ANALYTICS_ID = "G-X06N0YVTF8";
 const campaignParams = new URLSearchParams(window.location.search);
 const businessEmail = "reginaldoguincho24h@gmail.com";
 
