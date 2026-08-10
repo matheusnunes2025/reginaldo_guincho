@@ -36,7 +36,7 @@ function injectBusinessContact() {
     else bioContactMeta.appendChild(emailRow);
   }
 
-  if (window.location.pathname.startsWith("/bio") && !document.querySelector(".bio-back-button")) {
+  if (window.location.pathname.startsWith("/bio") && !document.querySelector(".bio-back-button, .bio-back-home")) {
     const backLink = document.createElement("a");
     backLink.href = "/";
     backLink.className = "bio-back-button";
