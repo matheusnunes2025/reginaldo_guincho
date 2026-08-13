@@ -6,6 +6,63 @@ window.gtag = window.gtag || function gtag(){ window.dataLayer.push(arguments); 
 const GOOGLE_ANALYTICS_ID = "G-X06N0YVTF8";
 const campaignParams = new URLSearchParams(window.location.search);
 const businessEmail = "reginaldoguincho24h@gmail.com";
+const BRAND_LOGO = "/assets/logo.png";
+const BRAND_FAVICON = "/assets/favicon.png";
+
+function applyBrandRefresh() {
+  if (!document.querySelector('link[data-brand-theme]')) {
+    const theme = document.createElement("link");
+    theme.rel = "stylesheet";
+    theme.href = "/brand-theme.css";
+    theme.dataset.brandTheme = "reginaldo-2026";
+    document.head.appendChild(theme);
+  }
+
+  document.querySelectorAll('link[rel~="icon"]').forEach((link) => {
+    link.href = BRAND_FAVICON;
+    link.type = "image/png";
+  });
+  if (!document.querySelector('link[rel="apple-touch-icon"]')) {
+    const appleIcon = document.createElement("link");
+    appleIcon.rel = "apple-touch-icon";
+    appleIcon.href = BRAND_FAVICON;
+    document.head.appendChild(appleIcon);
+  }
+
+  document.querySelectorAll('img[src*="logo-reginaldo-guincho"],img[src*="logo-cabecalho"]').forEach((image) => {
+    image.src = BRAND_LOGO;
+    image.removeAttribute("width");
+    image.removeAttribute("height");
+  });
+
+  document.querySelectorAll('script[type="application/ld+json"]').forEach((node) => {
+    if (node.textContent.includes("logo-reginaldo-guincho.webp")) {
+      node.textContent = node.textContent.replaceAll("/assets/logo-reginaldo-guincho.webp", BRAND_LOGO);
+    }
+  });
+}
+
+function injectNewGalleryPhotos() {
+  const newPhotos = [
+    {src:"/assets/guincho_carro.jpeg",label:"Sedã em transporte",alt:"Caminhão plataforma do Reginaldo Guincho transportando sedã em Formosa-GO"},
+    {src:"/assets/guincho_carro_2.jpeg",label:"Carro clássico",alt:"Reginaldo Guincho transportando carro clássico em caminhão plataforma"},
+    {src:"/assets/guincho_carro_3.jpeg",label:"Picape 4x4",alt:"Reginaldo Guincho transportando picape 4x4 em Formosa-GO"},
+    {src:"/assets/guincho_moto.jpeg",label:"Motocicleta",alt:"Reginaldo Guincho transportando motocicleta em caminhão plataforma"}
+  ];
+
+  document.querySelectorAll(".gallery-grid--rich,.services-gallery").forEach((gallery) => {
+    newPhotos.forEach((photo) => {
+      if (gallery.querySelector(`[data-full="${photo.src}"]`)) return;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "gallery-item gallery-item--new";
+      button.dataset.full = photo.src;
+      button.dataset.label = photo.label;
+      button.innerHTML = `<img src="${photo.src}" alt="${photo.alt}" loading="lazy"><span>${photo.label} <i class="fa-solid fa-plus"></i></span>`;
+      gallery.appendChild(button);
+    });
+  });
+}
 
 function installGoogleAnalytics() {
   const existingGtagScript = Array.from(document.scripts).find((script) =>
@@ -27,6 +84,7 @@ function installGoogleAnalytics() {
   }
 }
 
+applyBrandRefresh();
 installGoogleAnalytics();
 
 function injectBusinessContact() {
@@ -84,6 +142,7 @@ function injectBusinessContact() {
 }
 
 injectBusinessContact();
+injectNewGalleryPhotos();
 
 function sendEvent(eventName, location) {
   const eventData = {
@@ -95,35 +154,15 @@ function sendEvent(eventName, location) {
     utm_content: campaignParams.get("utm_content") || undefined
   };
 
-  window.dataLayer.push({
-    event: eventName,
-    ...eventData
-  });
-
-  if (typeof window.gtag === "function") {
-    window.gtag("event", eventName, eventData);
-  }
+  window.dataLayer.push({ event: eventName, ...eventData });
+  if (typeof window.gtag === "function") window.gtag("event", eventName, eventData);
 }
 
-document.querySelectorAll(".track-call").forEach((link) => {
-  link.addEventListener("click", () => sendEvent("call_click", link.dataset.location));
-});
-
-document.querySelectorAll(".track-whatsapp").forEach((link) => {
-  link.addEventListener("click", () => sendEvent("whatsapp_click", link.dataset.location));
-});
-
-document.querySelectorAll(".track-instagram").forEach((link) => {
-  link.addEventListener("click", () => sendEvent("instagram_click", link.dataset.location));
-});
-
-document.querySelectorAll(".track-email").forEach((link) => {
-  link.addEventListener("click", () => sendEvent("email_click", link.dataset.location));
-});
-
-document.querySelectorAll(".track-cta").forEach((link) => {
-  link.addEventListener("click", () => sendEvent("cta_click", link.dataset.location));
-});
+document.querySelectorAll(".track-call").forEach((link) => link.addEventListener("click", () => sendEvent("call_click", link.dataset.location)));
+document.querySelectorAll(".track-whatsapp").forEach((link) => link.addEventListener("click", () => sendEvent("whatsapp_click", link.dataset.location)));
+document.querySelectorAll(".track-instagram").forEach((link) => link.addEventListener("click", () => sendEvent("instagram_click", link.dataset.location)));
+document.querySelectorAll(".track-email").forEach((link) => link.addEventListener("click", () => sendEvent("email_click", link.dataset.location)));
+document.querySelectorAll(".track-cta").forEach((link) => link.addEventListener("click", () => sendEvent("cta_click", link.dataset.location)));
 
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const mobileMenu = document.querySelector("[data-mobile-menu]");
@@ -134,13 +173,11 @@ if (menuToggle && mobileMenu) {
     menuToggle.setAttribute("aria-expanded", String(open));
     document.body.classList.toggle("menu-open", open);
   });
-  mobileMenu.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      mobileMenu.classList.remove("open");
-      menuToggle.setAttribute("aria-expanded", "false");
-      document.body.classList.remove("menu-open");
-    });
-  });
+  mobileMenu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
+    mobileMenu.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("menu-open");
+  }));
 }
 
 const lightbox = document.getElementById("lightbox");
@@ -170,12 +207,8 @@ if (lightbox && lightboxImage && lightboxCaption && lightboxClose) {
     });
   });
   lightboxClose.addEventListener("click", closeLightbox);
-  lightbox.addEventListener("click", (event) => {
-    if (event.target === lightbox) closeLightbox();
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !lightbox.hidden) closeLightbox();
-  });
+  lightbox.addEventListener("click", (event) => { if (event.target === lightbox) closeLightbox(); });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !lightbox.hidden) closeLightbox(); });
 }
 
 const yearNode = document.getElementById("current-year");
@@ -196,7 +229,4 @@ if ("IntersectionObserver" in window) {
   revealItems.forEach((item) => item.classList.add("visible"));
 }
 
-window.dataLayer.push({
-  event: "page_ready",
-  tracked_events: ["call_click", "whatsapp_click", "instagram_click", "email_click", "cta_click"]
-});
+window.dataLayer.push({ event: "page_ready", tracked_events: ["call_click", "whatsapp_click", "instagram_click", "email_click", "cta_click"] });

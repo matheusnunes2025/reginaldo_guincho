@@ -4,10 +4,9 @@
   "description": "Guincho 24 horas e auto socorro em Formosa-GO e região.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0b0b0b",
-  "theme_color": "#0b0b0b",
+  "background_color": "#070707",
+  "theme_color": "#070707",
   "icons": [
-    {"src":"/assets/favicon-192.png","sizes":"192x192","type":"image/png"},
-    {"src":"/assets/favicon-512.png","sizes":"512x512","type":"image/png"}
+    {"src":"/assets/favicon.png","sizes":"1254x1254","type":"image/png","purpose":"any maskable"}
   ]
 }
