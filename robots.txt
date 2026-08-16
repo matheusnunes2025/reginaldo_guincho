@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://www.reginaldoguincho.com.br/sitemap.xml
