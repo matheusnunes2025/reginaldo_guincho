@@ -141,8 +141,69 @@ function injectBusinessContact() {
   }
 }
 
+function installMobileCtaHierarchy() {
+  if (!document.querySelector("style[data-mobile-cta-hierarchy]")) {
+    const style = document.createElement("style");
+    style.dataset.mobileCtaHierarchy = "2026-08";
+    style.textContent = `
+      @media (max-width: 768px) {
+        .floating-quick-actions { display: none !important; }
+        .header-call { display: none !important; }
+        .mobile-contact-bar {
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+          transform: translateY(110%) !important;
+          transition: opacity .2s ease, transform .24s ease, visibility .2s ease !important;
+        }
+        .mobile-contact-bar.mobile-contact-bar--visible {
+          opacity: 1 !important;
+          visibility: visible !important;
+          pointer-events: auto !important;
+          transform: translateY(0) !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const mobileBar = document.querySelector(".mobile-contact-bar");
+  if (!mobileBar) return;
+
+  const primaryActions = document.querySelector(".hero-actions, .page-hero-actions, .services-primary-actions");
+  if (!primaryActions) {
+    mobileBar.classList.add("mobile-contact-bar--visible");
+    return;
+  }
+
+  const setBarVisibility = (show) => {
+    mobileBar.classList.toggle("mobile-contact-bar--visible", show);
+  };
+
+  setBarVisibility(false);
+
+  if ("IntersectionObserver" in window) {
+    const ctaObserver = new IntersectionObserver(([entry]) => {
+      setBarVisibility(!entry.isIntersecting);
+    }, {
+      threshold: 0.08,
+      rootMargin: "-6px 0px 0px 0px"
+    });
+    ctaObserver.observe(primaryActions);
+  } else {
+    const updateBar = () => {
+      const rect = primaryActions.getBoundingClientRect();
+      setBarVisibility(rect.bottom <= 0 || rect.top >= window.innerHeight);
+    };
+    updateBar();
+    window.addEventListener("scroll", updateBar, { passive: true });
+    window.addEventListener("resize", updateBar);
+  }
+}
+
 injectBusinessContact();
 injectNewGalleryPhotos();
+installMobileCtaHierarchy();
 
 function sendEvent(eventName, location) {
   const eventData = {
